@@ -1,13 +1,16 @@
 package com.orion.repbook.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -27,6 +30,9 @@ public class Republica implements Serializable {
 
 	private Integer foundedIn;
 	private boolean active;
+	
+	@ManyToMany(mappedBy = "republicas")
+	private Set<Resident> residents = new HashSet<>();
 
 	public Long getId() {
 		return id;
@@ -66,6 +72,10 @@ public class Republica implements Serializable {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	
+	public Set<Resident> getResidents() {
+		return residents;
 	}
 
 	@Override
