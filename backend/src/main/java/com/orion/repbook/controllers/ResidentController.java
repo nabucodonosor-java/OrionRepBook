@@ -30,17 +30,18 @@ public class ResidentController {
 	
 	@GetMapping
 	public ResponseEntity<Page<ResidentDto>> findAll(
+			@RequestParam(value = "republicaId", defaultValue = "0") Long republicaId,
+			@RequestParam(value = "name", defaultValue = "") String name,
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "size", defaultValue = "12") Integer size,
 			@RequestParam(value = "sort", defaultValue = "ASC") String sort,
-			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy
-			) {
-		
-		PageRequest pageRequest = PageRequest.of(page, size, Direction.valueOf(sort), orderBy);
+			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
 				
-		Page<ResidentDto> list = service.findAllPaged(pageRequest);
+		PageRequest pageRequest = PageRequest.of(page, size, Direction.valueOf(sort), orderBy);
+		Page<ResidentDto> list = service.findAllPaged(pageRequest, republicaId, name.trim());
 		
 		return ResponseEntity.ok().body(list);
+
 	}
 
 	@GetMapping(value = "/{id}")

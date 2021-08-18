@@ -1,5 +1,7 @@
 package com.orion.repbook.services;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -33,9 +35,11 @@ public class ResidentService {
 	private RepublicaRepository republicaRepository;
 	
 	@Transactional(readOnly = true)
-	public Page<ResidentDto> findAllPaged(PageRequest pageRequest) {
-		Page<Resident> list = repository.findAll(pageRequest);
-		return list.map(x -> new ResidentDto(x));
+	public Page<ResidentDto> findAllPaged(PageRequest pageRequest, Long republicaId, String name) {
+		List<Republica> republicas = (republicaId == 0) ? null : Arrays.asList(republicaRepository.getOne(republicaId));
+		Page<Resident> page = repository.find(republicas, name, pageRequest);
+		repository.find(page.toList());
+		return page.map(x -> new ResidentDto(x, x.getRepublicas()));
 	}
 
 	@Transactional(readOnly = true)
