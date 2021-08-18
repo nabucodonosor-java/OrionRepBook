@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.orion.repbook.dto.UriDto;
 import com.orion.repbook.dto.UserDto;
 import com.orion.repbook.dto.UserInsertDto;
 import com.orion.repbook.dto.UserUpdateDto;
@@ -60,5 +63,11 @@ public class UserController {
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping("/image")
+	public ResponseEntity<UriDto> uploadFile(@RequestParam("file") MultipartFile file) {
+		UriDto dto = service.uploadFile(file);
+		return ResponseEntity.ok().body(dto);
 	}
 } 

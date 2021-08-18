@@ -1,5 +1,6 @@
 package com.orion.repbook.services;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.orion.repbook.dto.RepublicaDto;
 import com.orion.repbook.dto.ResidentDto;
+import com.orion.repbook.dto.UriDto;
 import com.orion.repbook.entities.Course;
 import com.orion.repbook.entities.Republica;
 import com.orion.repbook.entities.Resident;
@@ -33,6 +36,9 @@ public class ResidentService {
 	
 	@Autowired
 	private RepublicaRepository republicaRepository;
+	
+	@Autowired
+	private S3Service s3Service;
 	
 	@Transactional(readOnly = true)
 	public Page<ResidentDto> findAllPaged(PageRequest pageRequest, Long republicaId, String name) {
@@ -81,6 +87,13 @@ public class ResidentService {
 		catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Violação de integridade do DB");
 		}
+	}
+	
+	public UriDto uploadFile(MultipartFile file) {
+
+		URL url = s3Service.uploadFile(file);
+
+		return new UriDto(url.toString());
 	}
 	
 	private void copyToEntity(Resident entity, ResidentDto dto) {

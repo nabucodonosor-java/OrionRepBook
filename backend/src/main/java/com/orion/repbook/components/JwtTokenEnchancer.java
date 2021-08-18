@@ -14,7 +14,7 @@ import com.orion.repbook.entities.User;
 import com.orion.repbook.repository.UserRepository;
 
 @Component
-public class JwtTokenEnhancer implements TokenEnhancer {
+public class JwtTokenEnchancer implements TokenEnhancer {
 
 	@Autowired
 	private UserRepository userRepository;

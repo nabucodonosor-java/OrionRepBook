@@ -1,5 +1,6 @@
 package com.orion.repbook.services;
 
+import java.net.URL;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -17,8 +18,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.orion.repbook.dto.RoleDto;
+import com.orion.repbook.dto.UriDto;
 import com.orion.repbook.dto.UserDto;
 import com.orion.repbook.dto.UserInsertDto;
 import com.orion.repbook.dto.UserUpdateDto;
@@ -31,18 +34,21 @@ import com.orion.repbook.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService implements UserDetailsService {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private UserRepository repository;
-	
+
 	@Autowired
 	private RoleRepository roleRepository;
 	
+	@Autowired
+	private S3Service s3Service;
+
 	@Transactional(readOnly = true)
 	public Page<UserDto> findAllPaged(Pageable pageable) {
 		Page<User> list = repository.findAll(pageable);
@@ -72,30 +78,34 @@ public class UserService implements UserDetailsService {
 			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);
 			return new UserDto(entity);
-		}
-		catch (EntityNotFoundException e) {
+		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
-		}		
+		}
 	}
 
 	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
-		}
-		catch (EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
-		}
-		catch (DataIntegrityViolationException e) {
+		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Integrity violation");
 		}
 	}
-	
+
+	public UriDto uploadFile(MultipartFile file) {
+
+		URL url = s3Service.uploadFile(file);
+
+		return new UriDto(url.toString());
+	}
+
 	private void copyDtoToEntity(UserDto dto, User entity) {
 
 		entity.setName(dto.getName());
 		entity.setImgUrl(dto.getImgUrl());
 		entity.setEmail(dto.getEmail());
-		
+
 		entity.getRoles().clear();
 		for (RoleDto roleDto : dto.getRoles()) {
 			Role role = roleRepository.getOne(roleDto.getId());
@@ -105,7 +115,7 @@ public class UserService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
+
 		User user = repository.findByEmail(username);
 		if (user == null) {
 			logger.error("User not found: " + username);

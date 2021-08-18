@@ -16,12 +16,12 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-import com.orion.repbook.components.JwtTokenEnhancer;
+import com.orion.repbook.components.JwtTokenEnchancer;
 
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-
+	
 	@Value("${security.oauth2.client.client-id}")
 	private String clientId;
 	
@@ -32,7 +32,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private Integer jwtDuration;
 	
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+	private BCryptPasswordEncoder passwordEnconder;
 	
 	@Autowired
 	private JwtAccessTokenConverter accessTokenConverter;
@@ -41,35 +41,36 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private JwtTokenStore tokenStore;
 	
 	@Autowired
-	private AuthenticationManager authenticationManager;
+	private AuthenticationManager authManager;
 	
 	@Autowired
-	private JwtTokenEnhancer tokenEnhancer;
+	private JwtTokenEnchancer tokenEnchancer;
 	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
 	}
-
+	
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()
 		.withClient(clientId)
-		.secret(passwordEncoder.encode(clientSecret))
+		.secret(passwordEnconder.encode(clientSecret))
 		.scopes("read", "write")
 		.authorizedGrantTypes("password")
 		.accessTokenValiditySeconds(jwtDuration);
 	}
-
+	
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		
 		TokenEnhancerChain chain = new TokenEnhancerChain();
-		chain.setTokenEnhancers(Arrays.asList(accessTokenConverter, tokenEnhancer));
+		chain.setTokenEnhancers(Arrays.asList(accessTokenConverter, tokenEnchancer));
 		
-		endpoints.authenticationManager(authenticationManager)
+		endpoints.authenticationManager(authManager)
 		.tokenStore(tokenStore)
 		.accessTokenConverter(accessTokenConverter)
 		.tokenEnhancer(chain);
 	}
+
 }
