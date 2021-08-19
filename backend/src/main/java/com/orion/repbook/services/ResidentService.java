@@ -47,7 +47,7 @@ public class ResidentService {
 		repository.find(page.toList());
 		return page.map(x -> new ResidentDto(x, x.getRepublicas()));
 	}
-
+	
 	@Transactional(readOnly = true)
 	public ResidentDto findById(Long id) {
 		Optional<Resident> obj = repository.findById(id);

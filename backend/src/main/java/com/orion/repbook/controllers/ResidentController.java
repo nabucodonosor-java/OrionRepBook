@@ -1,6 +1,7 @@
 package com.orion.repbook.controllers;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,7 +46,7 @@ public class ResidentController {
 		return ResponseEntity.ok().body(list);
 
 	}
-
+	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ResidentDto> findById(@PathVariable Long id) {
 		ResidentDto dto = service.findById(id);

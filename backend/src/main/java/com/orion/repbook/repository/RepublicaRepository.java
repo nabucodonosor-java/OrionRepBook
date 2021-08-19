@@ -13,5 +13,6 @@ public interface RepublicaRepository extends JpaRepository<Republica, Long> {
 	
 	@Query("SELECT obj FROM Republica obj WHERE (LOWER(obj.name) LIKE LOWER(CONCAT('%',:name,'%'))) ")
 	Page<Republica> find(String name, Pageable pageable);
+	
 
 }

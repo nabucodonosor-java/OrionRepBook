@@ -21,5 +21,5 @@ public interface ResidentRepository extends JpaRepository<Resident, Long> {
 	
 	@Query("SELECT obj FROM Resident obj JOIN FETCH obj.republicas WHERE obj IN :residents")
 	List<Resident> find(List<Resident> residents);
-
+	
 }

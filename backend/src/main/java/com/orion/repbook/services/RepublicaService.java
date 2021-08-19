@@ -27,7 +27,14 @@ public class RepublicaService {
 	@Transactional(readOnly = true)
 	public Page<RepublicaDto> findAllPaged(PageRequest pageRequest) {
 		Page<Republica> page = repository.findAll(pageRequest);
-		return RepublicaDto.converter(page);
+		return page.map(r -> new RepublicaDto(r, r.getResidents()));
+	}
+	
+	@Transactional(readOnly = true)
+	public RepublicaDto findRepublicaWithResidents(Long id) {
+		Optional<Republica> optional = repository.findById(id);
+		return new RepublicaDto(optional.orElseThrow(() -> new ResourceNotFoundException("República não encontrada!")),
+				optional.get().getResidents());
 	}
 	
 	@Transactional(readOnly = true)

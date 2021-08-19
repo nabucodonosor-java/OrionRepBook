@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 
@@ -115,6 +116,10 @@ public class ResidentDto implements Serializable {
 
 	public static Page<ResidentDto> converter(Page<Resident> page) {
 		return page.map(ResidentDto::new);
+	}
+
+	public static List<ResidentDto> converter(List<Resident> residentsList) {
+		return residentsList.stream().map(r -> new ResidentDto(r)).collect(Collectors.toList());
 	}
 
 }

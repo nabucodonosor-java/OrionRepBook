@@ -1,10 +1,14 @@
 package com.orion.repbook.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 
 import com.orion.repbook.entities.Republica;
+import com.orion.repbook.entities.Resident;
 
 public class RepublicaDto implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -14,6 +18,8 @@ public class RepublicaDto implements Serializable {
 	private String name;
 	private Integer foundedIn;
 	private boolean active;
+	
+	private List<ResidentDto> residents = new ArrayList<>();
 
 	public RepublicaDto() {
 	}
@@ -24,6 +30,11 @@ public class RepublicaDto implements Serializable {
 		name = entity.getName();
 		foundedIn = entity.getFoundedIn();
 		active = entity.isActive();
+	}
+	
+	public RepublicaDto(Republica entity, Set<Resident> residents) {
+		this(entity);
+		residents.forEach(r -> this.getResidents().add(new ResidentDto(r)));
 	}
 
 	public Long getId() {
@@ -65,9 +76,13 @@ public class RepublicaDto implements Serializable {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+	
+	public List<ResidentDto> getResidents() {
+		return residents;
+	}
 
 	public static Page<RepublicaDto> converter(Page<Republica> page) {
-		return page.map(RepublicaDto::new);
+		return page.map(r -> new RepublicaDto(r, r.getResidents()));
 	}
 
 }

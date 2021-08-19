@@ -49,6 +49,12 @@ public class RepublicaController {
 		return ResponseEntity.ok().body(dto);
 	}
 	
+	@GetMapping(value = "/{id}/residents")
+	public ResponseEntity<RepublicaDto> findRepublicaByIdWithResidentList(@PathVariable Long id) {
+		RepublicaDto dto = service.findRepublicaWithResidents(id);
+		return ResponseEntity.ok().body(dto);
+	}
+	
 	@PostMapping
 	public ResponseEntity<RepublicaDto> insert(@RequestBody RepublicaDto dto) {
 		dto = service.insert(dto);
