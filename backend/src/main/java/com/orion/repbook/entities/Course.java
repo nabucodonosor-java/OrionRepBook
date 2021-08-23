@@ -1,15 +1,12 @@
 package com.orion.repbook.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.orion.repbook.dto.CourseDto;
@@ -23,9 +20,6 @@ public class Course implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	
-	@OneToMany(mappedBy = "course")
-	private List<Resident> residents = new ArrayList<>();
 	
 	public Course() {}
 
@@ -55,10 +49,6 @@ public class Course implements Serializable {
 		return Objects.hash(id);
 	}
 	
-	public List<Resident> getResidents() {
-		return residents;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
